@@ -33,11 +33,17 @@ pub fn test_basics() {
 }
 #[test]
 fn test_iter() {
-    let items = [1, 2, 3, 4, 5];
-    let list: List<i32> = items.into_iter().collect();
+    let mut items = [1, 2, 3, 4, 5];
+    let mut list: List<i32> = items.into_iter().collect();
+
     assert!(list.iter().eq(&items));
     assert!(list.iter().rev().eq(items.iter().rev()));
+
+    assert!(list.iter_mut().eq(&mut items));
+    assert!(list.iter_mut().rev().eq(items.iter_mut().rev()));
+
     assert!(list.clone().into_iter().eq(items));
+    assert!(list.clone().into_iter().rev().eq(items.into_iter().rev()));
 
     let mut iter = list.iter();
     assert_eq!(iter.next(), Some(&1));
@@ -45,6 +51,15 @@ fn test_iter() {
     assert_eq!(iter.next(), Some(&2));
     assert_eq!(iter.next_back(), Some(&4));
     assert_eq!(iter.next(), Some(&3));
+    assert_eq!(iter.next_back(), None);
+    assert_eq!(iter.next(), None);
+
+    let mut iter = list.iter_mut();
+    assert_eq!(iter.next(), Some(&mut 1));
+    assert_eq!(iter.next_back(), Some(&mut 5));
+    assert_eq!(iter.next(), Some(&mut 2));
+    assert_eq!(iter.next_back(), Some(&mut 4));
+    assert_eq!(iter.next(), Some(&mut 3));
     assert_eq!(iter.next_back(), None);
     assert_eq!(iter.next(), None);
 

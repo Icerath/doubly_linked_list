@@ -1,3 +1,5 @@
+use std::{marker::PhantomData, ptr::NonNull};
+
 use crate::{list::Node, DoublyLinkedList};
 
 // From Iter
@@ -65,7 +67,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
-impl<'a, T> DoubleEndedIterator for Iter<'a, T> {
+impl<T> DoubleEndedIterator for Iter<'_, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.len = self.len.checked_sub(1)?;
 
@@ -77,12 +79,64 @@ impl<'a, T> DoubleEndedIterator for Iter<'a, T> {
     }
 }
 
+impl<T> ExactSizeIterator for Iter<'_, T> {
+    fn len(&self) -> usize {
+        self.len
+    }
+}
+
 impl<T> DoublyLinkedList<T> {
     pub fn iter(&self) -> Iter<'_, T> {
         Iter {
             head: self.head.map(|ptr| unsafe { ptr.as_ref() }),
             tail: self.tail.map(|ptr| unsafe { ptr.as_ref() }),
             len: self.len(),
+        }
+    }
+}
+
+// Iter mut
+type LinkMut<T> = Option<NonNull<Node<T>>>;
+
+pub struct IterMut<'a, T> {
+    head: LinkMut<T>,
+    tail: LinkMut<T>,
+    len: usize,
+    _lifetime: PhantomData<&'a mut T>,
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.len = self.len.checked_sub(1)?;
+        let node = self.head;
+        self.head = self.head.and_then(|head| unsafe { head.as_ref() }.next);
+        node.map(|mut node| &mut unsafe { node.as_mut() }.val)
+    }
+}
+
+impl<T> DoubleEndedIterator for IterMut<'_, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.len = self.len.checked_sub(1)?;
+        let tail = self.tail;
+        self.tail = self.tail.and_then(|tail| unsafe { tail.as_ref() }.prev);
+        tail.map(|mut node| &mut unsafe { node.as_mut() }.val)
+    }
+}
+
+impl<T> ExactSizeIterator for IterMut<'_, T> {
+    fn len(&self) -> usize {
+        self.len
+    }
+}
+
+impl<T> DoublyLinkedList<T> {
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        IterMut {
+            head: self.head,
+            tail: self.tail,
+            len: self.len(),
+            _lifetime: PhantomData,
         }
     }
 }
