@@ -79,8 +79,10 @@ impl<T> ExactSizeIterator for Iter<'_, T> {
     }
 }
 
-impl<T> DoublyLinkedList<T> {
-    pub fn iter(&self) -> Iter<'_, T> {
+impl<'a, T> IntoIterator for &'a DoublyLinkedList<T> {
+    type IntoIter = Iter<'a, T>;
+    type Item = &'a T;
+    fn into_iter(self) -> Self::IntoIter {
         Iter {
             head: self.head,
             tail: self.tail,
@@ -125,8 +127,10 @@ impl<T> ExactSizeIterator for IterMut<'_, T> {
     }
 }
 
-impl<T> DoublyLinkedList<T> {
-    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+impl<'a, T> IntoIterator for &'a mut DoublyLinkedList<T> {
+    type IntoIter = IterMut<'a, T>;
+    type Item = &'a mut T;
+    fn into_iter(self) -> Self::IntoIter {
         IterMut {
             head: self.head,
             tail: self.tail,

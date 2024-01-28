@@ -13,6 +13,7 @@ pub struct DoublyLinkedList<T> {
 }
 
 impl<T> DoublyLinkedList<T> {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -83,11 +84,21 @@ impl<T> DoublyLinkedList<T> {
         unsafe { dealloc(head) };
         Some(node.val)
     }
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len == 0
+    }
+    #[must_use]
+    pub fn iter(&self) -> iter::Iter<'_, T> {
+        self.into_iter()
+    }
+    #[must_use]
+    pub fn iter_mut(&mut self) -> iter::IterMut<'_, T> {
+        self.into_iter()
     }
 }
 

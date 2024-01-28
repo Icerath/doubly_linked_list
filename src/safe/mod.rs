@@ -11,6 +11,7 @@ pub struct DoublyLinkedList<T> {
 }
 
 impl<T> DoublyLinkedList<T> {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -72,9 +73,11 @@ impl<T> DoublyLinkedList<T> {
         }
         Some(node.val)
     }
+    #[must_use]
     pub fn len(&self) -> usize {
         self.buf.len()
     }
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
