@@ -1,3 +1,7 @@
+pub mod iter;
+#[cfg(test)]
+mod tests;
+
 use std::{fmt, ptr::NonNull};
 
 type Link<T> = Option<NonNull<Node<T>>>;

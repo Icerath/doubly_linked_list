@@ -1,4 +1,4 @@
-use crate::{list::Node, DoublyLinkedList};
+use super::{DoublyLinkedList, Node};
 use std::{marker::PhantomData, ptr::NonNull};
 
 // From Iter

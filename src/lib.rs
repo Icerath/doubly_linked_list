@@ -1,7 +1,5 @@
-pub mod iter;
-mod list;
+pub mod safe;
+pub mod r#unsafe;
 
 #[cfg(test)]
 mod tests;
-
-pub use list::DoublyLinkedList;
