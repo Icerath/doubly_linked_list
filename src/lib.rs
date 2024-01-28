@@ -1,7 +1,7 @@
-mod dll;
 pub mod iter;
+mod list;
 
 #[cfg(test)]
 mod tests;
 
-pub use dll::DoublyLinkedList;
+pub use list::DoublyLinkedList;

@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{dll::Node, DoublyLinkedList};
+use crate::{list::Node, DoublyLinkedList};
 
 // From Iter
 impl<T> FromIterator<T> for DoublyLinkedList<T> {

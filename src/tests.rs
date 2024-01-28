@@ -1,4 +1,4 @@
-use crate::dll::DoublyLinkedList as List;
+use crate::list::DoublyLinkedList as List;
 
 #[test]
 pub fn test_basics() {
