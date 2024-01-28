@@ -1,4 +1,4 @@
-use std::ptr::NonNull;
+use std::{fmt, ptr::NonNull};
 
 type Link<T> = Option<NonNull<Node<T>>>;
 
@@ -94,6 +94,23 @@ impl<T> Default for DoublyLinkedList<T> {
             tail: None,
             len: 0,
         }
+    }
+}
+impl<T> Clone for DoublyLinkedList<T>
+where
+    T: Clone,
+{
+    fn clone(&self) -> Self {
+        self.iter().cloned().collect()
+    }
+}
+
+impl<T> fmt::Debug for DoublyLinkedList<T>
+where
+    T: fmt::Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_list().entries(self.iter()).finish()
     }
 }
 

@@ -1,5 +1,3 @@
-use std::fmt;
-
 use crate::{list::Node, DoublyLinkedList};
 
 // From Iter
@@ -86,23 +84,5 @@ impl<T> DoublyLinkedList<T> {
             tail: self.tail.map(|ptr| unsafe { ptr.as_ref() }),
             len: self.len(),
         }
-    }
-}
-
-impl<T> Clone for DoublyLinkedList<T>
-where
-    T: Clone,
-{
-    fn clone(&self) -> Self {
-        self.iter().cloned().collect()
-    }
-}
-
-impl<T> fmt::Debug for DoublyLinkedList<T>
-where
-    T: fmt::Debug,
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(self.iter()).finish()
     }
 }
