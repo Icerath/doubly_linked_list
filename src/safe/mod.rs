@@ -1,13 +1,18 @@
+use core::fmt;
+
+use self::iter::{Iter, IterMut};
+
+pub mod iter;
 #[cfg(test)]
 mod tests;
-use core::fmt;
 
 const NIL: usize = usize::MAX;
 
+#[derive(Clone)]
 pub struct DoublyLinkedList<T> {
-    buf: Vec<Node<T>>,
-    head: usize,
-    tail: usize,
+    pub(crate) buf: Vec<Node<T>>,
+    pub(crate) head: usize,
+    pub(crate) tail: usize,
 }
 
 impl<T> DoublyLinkedList<T> {
@@ -48,7 +53,6 @@ impl<T> DoublyLinkedList<T> {
             return None;
         }
         let node = self.remove_node(self.tail);
-
         self.tail = node.prev;
         if self.tail == NIL {
             self.head = NIL;
@@ -57,10 +61,7 @@ impl<T> DoublyLinkedList<T> {
         }
         Some(node.val)
     }
-    pub fn pop_front(&mut self) -> Option<T>
-    where
-        T: fmt::Debug,
-    {
+    pub fn pop_front(&mut self) -> Option<T> {
         if self.is_empty() {
             return None;
         }
@@ -81,22 +82,31 @@ impl<T> DoublyLinkedList<T> {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+    #[must_use]
+    pub fn iter(&self) -> Iter<'_, T> {
+        self.into_iter()
+    }
+    #[must_use]
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        self.into_iter()
+    }
     fn remove_node(&mut self, ptr: usize) -> Node<T> {
         let end = &self.buf[self.len() - 1];
         let (end_prev, end_next) = (end.prev, end.next);
 
-        if let Some(next) = self.buf.get_mut(end_next) {
-            next.prev = ptr;
-        }
         if let Some(prev) = self.buf.get_mut(end_prev) {
             prev.next = ptr;
         }
-
+        if let Some(next) = self.buf.get_mut(end_next) {
+            next.prev = ptr;
+        }
         let node = self.buf.swap_remove(ptr);
-        if self.is_empty() {
-            self.head = NIL;
-            self.tail = NIL;
-            return node;
+
+        if self.head == self.len() {
+            self.head = ptr;
+        }
+        if self.tail == self.len() {
+            self.tail = ptr;
         }
         node
     }
@@ -118,9 +128,18 @@ impl<T> Default for DoublyLinkedList<T> {
     }
 }
 
-#[derive(Debug)]
-pub struct Node<T> {
-    val: T,
-    next: usize,
-    prev: usize,
+impl<T> fmt::Debug for DoublyLinkedList<T>
+where
+    T: fmt::Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_list().entries(self).finish()
+    }
+}
+
+#[derive(Clone)]
+pub(crate) struct Node<T> {
+    pub(crate) val: T,
+    pub(crate) next: usize,
+    pub(crate) prev: usize,
 }
