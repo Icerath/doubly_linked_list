@@ -1,6 +1,5 @@
-use std::{marker::PhantomData, ptr::NonNull};
-
 use crate::{list::Node, DoublyLinkedList};
+use std::{marker::PhantomData, ptr::NonNull};
 
 // From Iter
 impl<T> FromIterator<T> for DoublyLinkedList<T> {
@@ -45,37 +44,32 @@ impl<T> IntoIterator for DoublyLinkedList<T> {
     }
 }
 // Iter
-type Link<'a, T> = Option<&'a Node<T>>;
+type Link<'a, T> = Option<NonNull<Node<T>>>;
 
 #[derive(Debug)]
 pub struct Iter<'a, T> {
     head: Link<'a, T>,
     tail: Link<'a, T>,
     len: usize,
+    _lifetime: PhantomData<&'a T>,
 }
 
 impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
     fn next(&mut self) -> Option<Self::Item> {
         self.len = self.len.checked_sub(1)?;
-
-        let head = self.head;
-        if let Some(head) = head {
-            self.head = head.next.map(|ptr| unsafe { ptr.as_ref() });
-        }
-        head.map(|node| &node.val)
+        let node = self.head;
+        self.head = self.head.and_then(|head| unsafe { head.as_ref() }.next);
+        node.map(|node| &unsafe { node.as_ref() }.val)
     }
 }
 
 impl<T> DoubleEndedIterator for Iter<'_, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.len = self.len.checked_sub(1)?;
-
-        let tail = self.tail;
-        if let Some(tail) = tail {
-            self.tail = tail.prev.map(|ptr| unsafe { ptr.as_ref() });
-        }
-        tail.map(|node| &node.val)
+        let node = self.tail;
+        self.tail = self.tail.and_then(|tail| unsafe { tail.as_ref() }.prev);
+        node.map(|node| &unsafe { node.as_ref() }.val)
     }
 }
 
@@ -88,9 +82,10 @@ impl<T> ExactSizeIterator for Iter<'_, T> {
 impl<T> DoublyLinkedList<T> {
     pub fn iter(&self) -> Iter<'_, T> {
         Iter {
-            head: self.head.map(|ptr| unsafe { ptr.as_ref() }),
-            tail: self.tail.map(|ptr| unsafe { ptr.as_ref() }),
+            head: self.head,
+            tail: self.tail,
             len: self.len(),
+            _lifetime: PhantomData,
         }
     }
 }
@@ -118,9 +113,9 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 impl<T> DoubleEndedIterator for IterMut<'_, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.len = self.len.checked_sub(1)?;
-        let tail = self.tail;
+        let node = self.tail;
         self.tail = self.tail.and_then(|tail| unsafe { tail.as_ref() }.prev);
-        tail.map(|mut node| &mut unsafe { node.as_mut() }.val)
+        node.map(|mut node| &mut unsafe { node.as_mut() }.val)
     }
 }
 
