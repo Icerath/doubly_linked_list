@@ -1,6 +1,5 @@
-use core::fmt;
-
 use self::iter::{Iter, IterMut};
+use core::fmt;
 
 pub mod iter;
 #[cfg(test)]
@@ -10,15 +9,19 @@ const NIL: usize = usize::MAX;
 
 #[derive(Clone)]
 pub struct DoublyLinkedList<T> {
-    pub(crate) buf: Vec<Node<T>>,
-    pub(crate) head: usize,
-    pub(crate) tail: usize,
+    buf: Vec<Node<T>>,
+    head: usize,
+    tail: usize,
 }
 
 impl<T> DoublyLinkedList<T> {
     #[must_use]
-    pub fn new() -> Self {
-        Self::default()
+    pub const fn new() -> Self {
+        Self {
+            buf: vec![],
+            head: NIL,
+            tail: NIL,
+        }
     }
     pub fn push_back(&mut self, val: T) {
         let ptr = self.push_buf(Node {
@@ -120,11 +123,7 @@ impl<T> DoublyLinkedList<T> {
 
 impl<T> Default for DoublyLinkedList<T> {
     fn default() -> Self {
-        Self {
-            buf: vec![],
-            head: NIL,
-            tail: NIL,
-        }
+        Self::new()
     }
 }
 
@@ -138,8 +137,8 @@ where
 }
 
 #[derive(Clone)]
-pub(crate) struct Node<T> {
-    pub(crate) val: T,
-    pub(crate) next: usize,
-    pub(crate) prev: usize,
+struct Node<T> {
+    val: T,
+    next: usize,
+    prev: usize,
 }

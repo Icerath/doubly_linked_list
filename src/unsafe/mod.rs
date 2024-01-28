@@ -7,15 +7,19 @@ use std::{fmt, ptr::NonNull};
 type Link<T> = Option<NonNull<Node<T>>>;
 
 pub struct DoublyLinkedList<T> {
-    pub(crate) head: Link<T>,
-    pub(crate) tail: Link<T>,
-    pub(crate) len: usize,
+    head: Link<T>,
+    tail: Link<T>,
+    len: usize,
 }
 
 impl<T> DoublyLinkedList<T> {
     #[must_use]
-    pub fn new() -> Self {
-        Self::default()
+    pub const fn new() -> Self {
+        Self {
+            head: None,
+            tail: None,
+            len: 0,
+        }
     }
     pub fn push_back(&mut self, val: T) {
         self.len += 1;
@@ -85,11 +89,11 @@ impl<T> DoublyLinkedList<T> {
         Some(node.val)
     }
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.len
     }
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.len == 0
     }
     #[must_use]
@@ -104,11 +108,7 @@ impl<T> DoublyLinkedList<T> {
 
 impl<T> Default for DoublyLinkedList<T> {
     fn default() -> Self {
-        Self {
-            head: None,
-            tail: None,
-            len: 0,
-        }
+        Self::new()
     }
 }
 impl<T> Clone for DoublyLinkedList<T>
@@ -125,30 +125,30 @@ where
     T: fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(self.iter()).finish()
+        f.debug_list().entries(self).finish()
     }
 }
 
 #[derive(Debug)]
-pub(crate) struct Node<T> {
-    pub(crate) val: T,
-    pub(crate) next: Link<T>,
-    pub(crate) prev: Link<T>,
+struct Node<T> {
+    val: T,
+    next: Link<T>,
+    prev: Link<T>,
 }
 
 impl<T> Node<T> {
-    pub(crate) fn new(val: T) -> Self {
+    const fn new(val: T) -> Self {
         Self {
             val,
             next: None,
             prev: None,
         }
     }
-    pub(crate) fn alloc(self) -> NonNull<Self> {
+    fn alloc(self) -> NonNull<Self> {
         NonNull::from(Box::leak(Box::new(self)))
     }
 }
 
-pub(crate) unsafe fn dealloc<T>(node: NonNull<Node<T>>) {
+unsafe fn dealloc<T>(node: NonNull<Node<T>>) {
     let _ = unsafe { Box::from_raw(node.as_ptr()) };
 }

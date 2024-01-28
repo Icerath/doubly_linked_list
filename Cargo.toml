@@ -3,5 +3,9 @@ name = "doubly_linked_list"
 version = "0.1.0"
 edition = "2021"
 
+[lints.clippy]
+pedantic = "warn"
+nursery = "warn"
+module_name_repetitions = "allow"
 
 [dependencies]

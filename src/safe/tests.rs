@@ -31,6 +31,7 @@ fn test_basics() {
     assert_eq!(list.pop_back(), Some(3));
 }
 
+#[allow(clippy::cognitive_complexity)]
 #[test]
 fn test_iter() {
     let mut items = [1, 2, 3, 4, 5];
