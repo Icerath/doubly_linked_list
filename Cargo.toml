@@ -7,5 +7,3 @@ edition = "2021"
 pedantic = "warn"
 nursery = "warn"
 module_name_repetitions = "allow"
-
-[dependencies]

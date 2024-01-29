@@ -57,9 +57,7 @@ impl<T> DoublyLinkedList<T> {
         }
         let node = self.remove_node(self.tail);
         self.tail = node.prev;
-        if self.tail == NIL {
-            self.head = NIL;
-        } else {
+        if self.tail != NIL {
             self.buf[self.tail].next = NIL;
         }
         Some(node.val)
@@ -70,9 +68,7 @@ impl<T> DoublyLinkedList<T> {
         }
         let node = self.remove_node(self.head);
         self.head = node.next;
-        if self.head == NIL {
-            self.tail = NIL;
-        } else {
+        if self.head != NIL {
             self.buf[self.head].prev = NIL;
         }
         Some(node.val)
@@ -116,7 +112,6 @@ impl<T> DoublyLinkedList<T> {
     fn push_buf(&mut self, node: Node<T>) -> usize {
         let ptr = self.buf.len();
         self.buf.push(node);
-
         ptr
     }
 }

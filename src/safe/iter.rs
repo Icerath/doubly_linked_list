@@ -126,7 +126,9 @@ impl<'a, T> IntoIterator for &'a mut DoublyLinkedList<T> {
 // FromIter
 impl<T> FromIterator<T> for DoublyLinkedList<T> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let iter = iter.into_iter();
         let mut list = Self::default();
+        list.buf.reserve(iter.size_hint().0);
         for i in iter {
             list.push_back(i);
         }
